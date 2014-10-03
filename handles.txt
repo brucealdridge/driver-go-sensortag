@@ -1,0 +1,54 @@
+l2cap reading serviceUuid 180a characteristicUuis 2a23 valueHandle 18
+	system id = 90:03:b7:00:00:ca:12:3d
+readSerialNumber
+l2cap reading serviceUuid 180a characteristicUuis 2a25 valueHandle 22
+	serial number = PI040298AA3K021660
+readFirmwareRevision
+l2cap reading serviceUuid 180a characteristicUuis 2a26 valueHandle 24
+	firmware revision = 2013-09-05_hawaii-1.0.0_hardware-config-MP
+readHardwareRevision
+l2cap reading serviceUuid 180a characteristicUuis 2a27 valueHandle 26
+	hardware revision = 2013-07-26_hawaiiProduction-1.2_protoDV-bootloader
+readBatteryLevel
+l2cap reading serviceUuid 180f characteristicUuis 2a19 valueHandle 68
+battery level = 100
+readFriendlyName
+l2cap reading serviceUuid 39e1fe0084a811e2afba0002a5d5c51b characteristicUuis 39e1fe0384a811e2afba0002a5d5c51b valueHandle 122
+	friendly name =
+writeFriendlyName
+readColor
+l2cap reading serviceUuid 39e1fe0084a811e2afba0002a5d5c51b characteristicUuis 39e1fe0484a811e2afba0002a5d5c51b valueHandle 125
+	color = green
+readSunlight
+l2cap reading serviceUuid 39e1fa0084a811e2afba0002a5d5c51b characteristicUuis 39e1fa0184a811e2afba0002a5d5c51b valueHandle 37
+sunlight = 0.10
+readTemperature
+l2cap reading serviceUuid 39e1fa0084a811e2afba0002a5d5c51b characteristicUuis 39e1fa0484a811e2afba0002a5d5c51b valueHandle 49
+temperature = -10°C, 15°F
+readSoilMoisture
+l2cap reading serviceUuid 39e1fa0084a811e2afba0002a5d5c51b characteristicUuis 39e1fa0584a811e2afba0002a5d5c51b valueHandle 53
+soil moisture = 0%
+
+
+
+
+
+
+
+
+attr handle: 0x0023, end grp handle: 0x0041 uuid: 39e1fa00-84a8-11e2-afba-0002a5d5c51b
+attr handle: 0x0046, end grp handle: 0x005e uuid: 39e1fc00-84a8-11e2-afba-0002a5d5c51b
+attr handle: 0x005f, end grp handle: 0x006d uuid: 39e1fb00-84a8-11e2-afba-0002a5d5c51b
+attr handle: 0x006e, end grp handle: 0x0071 uuid: 39e1fd00-84a8-11e2-afba-0002a5d5c51b
+attr handle: 0x0072, end grp handle: 0x007e uuid: 39e1fe00-84a8-11e2-afba-0002a5d5c51b
+
+
+18-125
+
+
+
+---readrequest--  37
+  l2cap-ble 90:03:B7:CA:12:3D: write: 0a2500 +13ms
+  l2cap-ble 90:03:B7:CA:12:3D: buffer = "data 0b14ae\n" +125ms
+  l2cap-ble 90:03:B7:CA:12:3D: line = data 0b14ae +2ms
+sunlight = 2.26

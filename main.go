@@ -9,8 +9,7 @@ import (
 	"os/signal"
 	"regexp"
 	"strings"
-	"time"
-
+	// "time"
 	"github.com/bitly/go-simplejson"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/ninjasphere/gatt"
@@ -18,9 +17,16 @@ import (
 	"github.com/ninjasphere/go-ninja/logger"
 )
 
-const driverName = "driver-ble"
+const driverName = "driver-flowerpower"
 
 const flowerPowerServiceUuid = "39e1fa0084a811e2afba0002a5d5c51b"
+
+const LIVE_MODE_UUID = "39e1fa0684a811e2afba0002a5d5c51b"
+const SUNLIGHT_UUID = "39e1fa0184a811e2afba0002a5d5c51b"
+const TEMPERATURE_UUID = "39e1fa0484a811e2afba0002a5d5c51b"
+const SOIL_MOISTURE_UUID = "39e1fa0584a811e2afba0002a5d5c51b"
+const FRIENDLY_NAME_UUID = "39e1fe0384a811e2afba0002a5d5c51b"
+const COLOR_UUID = "39e1fe0484a811e2afba0002a5d5c51b"
 
 type waypointPayload struct {
 	Sequence    uint8
@@ -37,14 +43,14 @@ type adPacket struct {
 }
 
 // configure the agent logger
-var log = logger.GetLogger("driver-go-ble")
+var log = logger.GetLogger("driver-go-flowerpower")
 
 //var mesh *udpMesh
 
 func sendRssi(device string, name string, waypoint string, rssi int8, isSphere bool, conn *ninja.NinjaConnection) {
 	device = strings.ToUpper(device)
 
-	log.Debugf(">> Device:%s Waypoint:%s Rssi: %d", device, waypoint, rssi)
+	// log.Debugf(">> Device:%s Waypoint:%s Rssi: %d", device, waypoint, rssi)
 
 	packet, _ := simplejson.NewJson([]byte(`{
 		"params": [
@@ -116,33 +122,32 @@ func realMain() int {
 		},
 	}
 
-	/*
-		Waypoint notification characteristic {
-			"startHandle": 45,
-			"properties": 16, (useNotify = true, useIndicate = false)
-			"valueHandle": 46,
-			"uuid": "fff4",
-			"endHandle": 48,
-		}
-	*/
+	// Waypoint notification characteristic {
+	// 	"startHandle": 45,
+	// 	"properties": 16, (useNotify = true, useIndicate = false)
+	// 	"valueHandle": 46,
+	// 	"uuid": "fff4",
+	// 	"endHandle": 48,
+	// }
 
-	go func() {
-		for {
-			time.Sleep(time.Second)
-			waypoints := 0
-			for id, active := range activeWaypoints {
-				log.Debugf("Waypoint %s is active? %t", id, active)
-				if active {
-					waypoints++
-				}
-			}
-			log.Debugf("%d waypoint(s) active", waypoints)
-
-			packet, _ := simplejson.NewJson([]byte(fmt.Sprintf("%d", waypoints)))
-
-			conn.PublishMessage("$location/waypoints", packet)
-		}
-	}()
+	//
+	// go func() {
+	// 	for {
+	// 		time.Sleep(time.Second)
+	// 		waypoints := 0
+	// 		for id, active := range activeWaypoints {
+	// 			// log.Debugf("Waypoint %s is active? %t", id, active)
+	// 			if active {
+	// 				waypoints++
+	// 			}
+	// 		}
+	// 		// log.Debugf("%d waypoint(s) active", waypoints)
+	//
+	// 		packet, _ := simplejson.NewJson([]byte(fmt.Sprintf("%d", waypoints)))
+	//
+	// 		conn.PublishMessage("$location/waypoints", packet)
+	// 	}
+	// }()
 
 	client.Rssi = func(address string, name string, rssi int8) {
 		//log.Printf("Rssi update address:%s rssi:%d", address, rssi)
@@ -151,15 +156,16 @@ func realMain() int {
 	}
 
 	client.Advertisement = func(device *gatt.DiscoveredDevice) {
-		log.Debugf("Discovered address:%s rssi:%d", device.Address, device.Rssi)
+		// log.Debugf("Discovered address:%s rssi:%d", device.Address, device.Rssi)
 
-		if device.Advertisement.LocalName == "NinjaSphereWaypoint" {
-			handleSphereWaypoint(conn, client, device)
-			return
-		}
+		// if device.Advertisement.LocalName == "NinjaSphereWaypoint" {
+		// 	handleSphereWaypoint(conn, client, device)
+		// 	return
+		// }
 
 		for uuid, _ := range device.Advertisement.ServiceUuids {
 			if uuid == flowerPowerServiceUuid {
+				// log.Infof("using uuid %s ", flowerPowerServiceUuid)
 				handleFlowerPower(conn, client, device)
 			}
 		}
@@ -196,7 +202,7 @@ func handleSphereWaypoint(conn *ninja.NinjaConnection, client *gatt.Client, devi
 
 	if device.Connected == nil {
 		device.Connected = func() {
-			log.Infof("Connected to waypoint: %s", device.Address)
+			// log.Infof("Connected to waypoint: %s", device.Address)
 			//spew.Dump(device.Advertisement)
 
 			// XXX: Yes, magic numbers.... this enables the notification from our Waypoints
@@ -255,18 +261,29 @@ func handleFlowerPower(conn *ninja.NinjaConnection, client *gatt.Client, device 
 	if device.Connected == nil {
 		device.Connected = func() {
 			log.Infof("Connected to flower power: %s", device.Address)
-			//spew.Dump(device.Advertisement)
+			client.SetupFlowerPower(device.Address)
+			log.Infof("Sunlight: %f", GetSunlight(client, device))
+			log.Infof("Temperature: %f ", GetTemperature(client, device))
+			log.Infof("Moisture: %f", GetMoisture(client, device))
+
+
 
 			// XXX: Yes, magic numbers.... this enables the notification from our Waypoints
 			// client.Notify(device.Address, true, 45, 48, true, false)
 
 			// Getting Temperature
-			data := <-client.ReadByHandle(device.Address, uint16(53))
-			log.Infof("Handle 49's data %x", data)
-			var initColor uint16
-			buf := bytes.NewReader(data[1:])
-			err := binary.Read(buf, binary.LittleEndian, &initColor)
-			log.Infof("Got %x err %s", initColor, err)
+			// time.Sleep(2*time.Second)
+			//
+			// data := <-client.ReadByHandle(device.Address, uint16(37))
+			// log.Infof("raw data--- % X", data)
+			// var sunlight uint16
+			// buf := bytes.NewReader(data[1:])
+			// err := binary.Read(buf, binary.LittleEndian, &sunlight)
+			// if err != nil {
+			// 	log.Infof("cant read uint data")
+			// }
+			// log.Infof("uint data %d", sunlight)
+
 		}
 
 		device.Disconnected = func() {
