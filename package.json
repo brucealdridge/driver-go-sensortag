@@ -1,10 +1,1 @@
-{
-  "id": "com.ninjablocks.flowerpower",
-  "name": "Flower Power",
-  "version": "0.1.0",
-  "description": "A driver for the flower power plant sensor",
-  "main": "driver-go-flowerpower",
-  "author": "Nick Clark <nick@ninjablocks.com>",
-  "license": "MIT",
-  "maxMemory": 5
-}
+ninjapack/root/opt/ninjablocks/drivers/driver-go-flowerpower/package.json
