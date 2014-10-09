@@ -1,5 +1,5 @@
 bin/*
-driver-go-ble
+driver-go-flowerpower
 sphere-serial
 sphere-config
 .gopath/*
