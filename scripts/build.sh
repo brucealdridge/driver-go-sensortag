@@ -2,8 +2,8 @@
 set -ex
 
 OWNER=ninjasphere
-BIN_NAME=driver-go-ble
-PROJECT_NAME=driver-go-ble
+BIN_NAME=driver-go-flowerpower
+PROJECT_NAME=driver-go-flowerpower
 
 # Get the parent directory of where this script is.
 SOURCE="${BASH_SOURCE[0]}"
