@@ -1,6 +1,9 @@
 driver-go-flowerpower
 
-Sphere driver which interfaces with the Flower Power plant snseor. The primary interface is via ninjasphere's GATT fork.
+Sphere driver which interfaces with the Flower Power plant sensor. The primary interface is via ninjasphere's GATT fork.
+
+Known Issues:
+  - Driver needs to be on a proper event look rather than relying on disconnect messages from the device
 
 License
 Copyright (c) 2014 Ninjablocks Inc
