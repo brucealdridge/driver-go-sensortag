@@ -38,7 +38,7 @@ func NewFlowerPowerDriver() (*FlowerPowerDriver, error) {
 	conn, err := ninja.Connect("FlowerPower")
 
 	if err != nil {
-		log.Fatalf("Failed to create fake driver: %s", err)
+		log.Fatalf("Failed to create Flower Power driver: %s", err)
 	}
 
 	driver := &FlowerPowerDriver{

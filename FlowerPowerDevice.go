@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/bitly/go-simplejson"
 	"github.com/davecgh/go-spew/spew"
@@ -100,12 +101,16 @@ func (fp *FlowerPower) deviceConnected() {
 	fp.notifyAll()
 	log.Infof("Enabling live mode")
 	fp.EnableLiveMode()
-
+	time.Sleep(dataInterval)
+	log.Infof("Disabling live mode")
+	fp.DisableLiveMode()
 }
 
 func (fp *FlowerPower) deviceDisconnected() {
 	log.Infof("Disconnected from flower power: %s", fp.gattDevice.Address)
 	activeFlowerPowers[fp.gattDevice.Address] = false
+	time.Sleep(reconnectInterval)
+	log.Infof("Reconnecting...")
 	err := fp.gattClient.Connect(fp.gattDevice.Address, fp.gattDevice.PublicAddress)
 	if err != nil {
 		log.Errorf("reconnect error:%s", err)
@@ -126,7 +131,17 @@ func (fp *FlowerPower) SetEventHandler(sendEvent func(event string, payload inte
 
 func (fp *FlowerPower) EnableLiveMode() {
 	//this sends raw bytes necessary to put device into live mode
-	fp.gattClient.SetupFlowerPower(fp.gattDevice.Address) //TODO FIX ASAP!
+	// fp.gattClient.SetupFlowerPower(fp.gattDevice.Address) //TODO FIX ASAP!
+	cmds := make([]string, 1)
+	cmds[0] = "12390001"
+	fp.gattClient.SendRawCommands(fp.gattDevice.Address, cmds)
+
+}
+
+func (fp *FlowerPower) DisableLiveMode() {
+	cmds := make([]string, 1)
+	cmds[0] = "12390000"
+	fp.gattClient.SendRawCommands(fp.gattDevice.Address, cmds)
 }
 
 func (fp *FlowerPower) notifyByHandle(startHandle, endHandle uint16) {
