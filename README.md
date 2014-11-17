@@ -5,5 +5,5 @@ Sphere driver which interfaces with the Flower Power plant sensor. The primary i
 Known Issues:
   - Driver needs to be on a proper event look rather than relying on disconnect messages from the device
 
-License
-Copyright (c) 2014 Ninjablocks Inc
+License - MIT
+Copyright (c) 2014 Ninja Blocks Inc
